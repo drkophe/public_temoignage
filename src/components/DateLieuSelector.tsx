@@ -157,14 +157,16 @@ export default function DateLieuSelector({ onSelect }: DateLieuSelectorProps) {
             </option>
           ))}
         </select>
+
+        {isMarcheMontaigu && !isDateValid && (
+          <p className="text-red-500 text-sm mt-2">
+            🚫 Réservation indisponible pour le Marché Montaigu.  
+            Vous pouvez réserver uniquement les <strong>jeudis</strong>.
+          </p>
+        )}
+
       </div>
 
-      {isMarcheMontaigu && !isDateValid && (
-        <p className="text-red-500 text-sm mt-2">
-          🚫 Réservation indisponible pour le Marché Montaigu.  
-          Vous pouvez réserver uniquement les <strong>jeudis</strong>.
-        </p>
-      )}
     </div>
   );
 }
