@@ -74,11 +74,23 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
     }));
   };
 
+  useEffect(() => {
+    // Réinitialiser les personnes sélectionnées quand le lieu change
+    setFormData(prev => ({
+      ...prev,
+      personnesIds: [], // On vide la sélection
+    }));
+  }, [lieuId]); // Déclenchement dès que `lieuId` change
+  
+
   const handlePersonneChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(e.target.selectedOptions, option => Number(option.value));
     setFormData(prev => ({
       ...prev,
-      personnesIds: selectedOptions.slice(0, 2), // Maximum 2 personnes
+      // personnesIds: selectedOptions.slice(0, 2), // Maximum 2 personnes
+      // Si le lieu à l'id 1 ou 2, alors 4 personnes, sinon 2 personne
+      // personnesIds: selectedOptions.slice(0, lieuId === 1 || lieuId === 2 ? 4 : 2), // MELUN
+      personnesIds: selectedOptions.slice(0, lieuId === 5 ? 4 : 2),
     }));
   };
 
@@ -230,12 +242,15 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
           
           <div>
             <label htmlFor="personnes" className="block text-sm font-medium text-gray-700 mb-1">
-              Personnes (max 2)
+              {formData.lieuId === 5 ? 'Personnes (max 4)' : 'Personnes (max 2)'}
+              {/* {formData.lieuId === 1 || formData.lieuId === 2 ? 'Personnes (max 4)' : 'Personnes (max 2)'} */}
+              {/* Personnes (max 2) */}
             </label>
             <select
               id="personnes"
               name="personnes"
               multiple
+              // la valeur doit être réinitialiser chaque fois que le formulaire change de lieu
               value={formData.personnesIds.map(String)}
               onChange={handlePersonneChange}
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#6182B9] focus:border-[#6182B9]"
@@ -249,9 +264,15 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
               ))}
             </select>
             <p className="mt-1 text-sm text-gray-500">
-              {formData.personnesIds.length === 0 
-                ? 'Aucune personne sélectionnée' 
-                : `Sélectionné: ${formData.personnesIds.length}/2`}
+              {formData.personnesIds.length === 0 ? 
+                'Aucune personne sélectionnée' 
+                : 
+                // formData.lieuId === 1 || formData.lieuId === 2 ? 
+                formData.lieuId === 5 ? 
+                  `Sélectionné: ${formData.personnesIds.length}/4` 
+                  : 
+                  `Sélectionné: ${formData.personnesIds.length}/2`
+              }
             </p>
           </div>
         </div>

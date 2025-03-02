@@ -124,19 +124,19 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
         {events.map(event => (
           <div
             key={event.id}
-            className="absolute left-16 right-4 bg-[#799FCC]/20 border-l-4 border-[#799FCC] rounded p-2 shadow-sm overflow-hidden z-20"
+            className="absolute left-16 right-4 bg-[#E4ECF5] border-l-4 border-[#799FCC] rounded p-2 shadow-sm overflow-hidden z-20"
             style={getEventStyle(event)}
           >
             <div className="flex justify-between items-start">
               <div>
                 <div className='flex items-center space-x-2'>
-                  <p className="text-xs font-semibold text-[#799FCC]">
+                  <p className="text-[8px] font-semibold text-[#799FCC]">
                     {format(new Date(event.heureDebut), 'HH:mm', { locale: fr })} - 
                     {format(new Date(event.heureFin), 'HH:mm', { locale: fr })}
                   </p>
-                  <p className="text-xs text-gray-500">{event.lieu.nom}</p>
+                  <p className="text-[8px] text-gray-500">{event.lieu.nom}</p>
                 </div>
-                <p className="text-sm text-gray-800">
+                <p className="text-sm text-gray-800" style={event.personnes.length > 2 ? { fontSize: '10px' } : {}}>
                   {event.personnes.map(p => p.prenom).join(', ')}
                 </p>
               </div>

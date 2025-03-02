@@ -61,9 +61,9 @@ export async function POST(request: Request) {
       );
     }
 
-    if (personnesIds.length > 2) {
+    if (personnesIds.length > 4) {
       return NextResponse.json(
-        { error: 'Maximum 2 personnes par événement' },
+        { error: 'Maximum 4 personnes par événement' },
         { status: 400 }
       );
     }
