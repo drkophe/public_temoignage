@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { Event } from '@/types';
-import { format, differenceInMinutes } from 'date-fns';
+import { format, differenceInMinutes, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
+// Importation correcte de date-fns-tz
+// import * as dateFnsTz from 'date-fns-tz';
 
 interface DailyCalendarProps {
   date: string;
@@ -16,6 +18,9 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Définir le fuseau horaire local (pour la France)
+  // const timeZone = 'Europe/Paris';
+
   // Heures de 6h à 20h
   const hours = Array.from({ length: 15 }, (_, i) => i + 6);
 
@@ -25,11 +30,11 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
         setLoading(true);
         setError(null);
         const response = await fetch(`/api/events?date=${date}&lieuId=${lieuId}`);
-        
+       
         if (!response.ok) {
           throw new Error('Erreur lors du chargement des événements');
         }
-        
+       
         const data = await response.json();
         setEvents(data);
         setLoading(false);
@@ -44,11 +49,6 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
       fetchEvents();
     }
   }, [date, lieuId]);
-
-  useEffect(() => {
-    console.log("Données reçues pour events:", events);
-  }, [events]);
-  
 
   const handleDeleteEvent = async (eventId: number) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
@@ -73,85 +73,80 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
     }
   };
 
-  // Fonction pour calculer la position et la hauteur de l'événement
-  // const getEventStyle = (event: Event) => {
-  //   const startHour = new Date(event.heureDebut).getHours();
-  //   const startMinutes = new Date(event.heureDebut).getMinutes();
-  //   const duration = differenceInMinutes(new Date(event.heureFin), new Date(event.heureDebut));
-    
-  //   // Calculer la position top (1 heure = 60px, 1 minute = 1px)
-  //   const topPosition = (startHour - 6) * 60 + startMinutes;
-    
-  //   // Calculer la hauteur (1 minute = 1px)
-  //   const height = duration;
-    
-  //   return {
-  //     top: `${topPosition}px`,
-  //     height: `${height}px`,
-  //   };
-  // };
-
-  // if (loading) {
-  //   return <div className="flex justify-center p-4">Chargement...</div>;
-  // }
-
-  // if (error) {
-  //   return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
-  // }
-
+  // Version alternative pour gérer les dates sans utiliser utcToZonedTime
   const getEventStyle = (event: Event) => {
-    // Création de dates avec la gestion explicite du fuseau horaire
-    const startDate = new Date(event.heureDebut);
-    const endDate = new Date(event.heureFin);
-    
-    console.log('Debug - Heures brutes:', { 
-      heureDebut: event.heureDebut,
-      heureFin: event.heureFin 
-    });
-    
-    console.log('Debug - Dates parsées:', { 
-      startDate,
-      endDate,
-      startHour: startDate.getHours(),
-      startMinutes: startDate.getMinutes()
-    });
-    
-    const startHour = startDate.getHours();
-    const startMinutes = startDate.getMinutes();
-    const duration = differenceInMinutes(endDate, startDate);
-    
-    // Calculer la position top (1 heure = 60px, 1 minute = 1px)
-    const topPosition = (startHour - 6) * 60 + startMinutes;
-    
-    // Calculer la hauteur (1 minute = 1px)
-    const height = duration;
-    
-    console.log('Debug - Calcul position:', {
-      topPosition,
-      height
-    });
-    
-    return {
-      top: `${topPosition}px`,
-      height: `${height}px`,
-    };
+    try {
+      // Analyser les dates ISO directement
+      const startDate = parseISO(event.heureDebut);
+      const endDate = parseISO(event.heureFin);
+      
+      // Obtenir les heures et minutes
+      const startHour = startDate.getHours();
+      const startMinutes = startDate.getMinutes();
+      
+      // Calculer la durée en minutes
+      const duration = differenceInMinutes(endDate, startDate);
+      
+      // Calculer la position top (1 heure = 60px, 1 minute = 1px)
+      const topPosition = (startHour - 6) * 60 + startMinutes;
+      
+      // Pour déboguer pendant le développement
+      console.log('Event Info:', {
+        id: event.id,
+        heureDebut: event.heureDebut,
+        heureFin: event.heureFin,
+        startDate,
+        endDate,
+        startHour,
+        startMinutes,
+        duration,
+        topPosition
+      });
+      
+      return {
+        top: `${topPosition}px`,
+        height: `${duration}px`,
+      };
+    } catch (err) {
+      console.error('Erreur dans getEventStyle:', err);
+      // Retourner des valeurs par défaut en cas d'erreur
+      return {
+        top: '0px',
+        height: '60px',
+      };
+    }
   };
-  
 
+  // Fonction simplifiée pour formater l'heure
+  const formatEventTime = (dateString: string) => {
+    try {
+      const date = parseISO(dateString);
+      return format(date, 'HH:mm', { locale: fr });
+    } catch (err) {
+      console.error('Erreur dans formatEventTime:', err);
+      return '--:--';
+    }
+  };
 
+  if (loading) {
+    return <div className="flex justify-center p-4">Chargement...</div>;
+  }
+
+  if (error) {
+    return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
+  }
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden relative">
       {/* Lignes horizontales pour cacher la première et la dernière heure */}
       <div className='bg-white w-full h-2 absolute top-0 z-10'></div>
       <div className='bg-white w-full h-2 absolute bottom-0 z-10'></div>
-      
-
+     
       <div className="relative" style={{ height: '840px' }}> {/* 14 heures * 60px */}
         {/* Lignes des heures */}
         {hours.map(hour => (
-          <div 
-            key={hour} 
+          <div
+            key={hour}
             className="absolute w-full border-t border-gray-200 flex"
             style={{ top: `${(hour - 6) * 60}px` }}
           >
@@ -161,7 +156,7 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
             <div className="flex-1"></div>
           </div>
         ))}
-        
+       
         {/* Événements */}
         {events.map(event => (
           <div
@@ -173,11 +168,8 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
               <div>
                 <div className='flex items-center space-x-2'>
                   <p className="text-[8px] font-semibold text-[#799FCC]">
-                    {/* {format(parseISO(event.heureDebut), 'HH:mm', { locale: fr })} -  */}
-                    {/* {format(parseISO(event.heureFin), 'HH:mm', { locale: fr })} */}
-                    {/* { console.log(typeof event.heureDebut) } */}
-                    {format(new Date(event.heureDebut), 'HH:mm', { locale: fr })} - 
-                    {format(new Date(event.heureFin), 'HH:mm', { locale: fr })}
+                    {formatEventTime(event.heureDebut)} -
+                    {formatEventTime(event.heureFin)}
                   </p>
                   <p className="text-[8px] text-gray-500">{event.lieu.nom}</p>
                 </div>
