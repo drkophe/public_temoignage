@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Lieu, Personne, EventFormData } from '@/types';
 import { format, getDay, parseISO } from 'date-fns';
-import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
 
 interface EventFormProps {
   date: string;
