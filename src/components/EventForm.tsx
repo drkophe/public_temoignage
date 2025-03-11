@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Lieu, Personne, EventFormData } from '@/types';
 import { format, getDay, parseISO } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface EventFormProps {
   date: string;
@@ -23,7 +24,7 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
   const [formData, setFormData] = useState<EventFormData>({
     date: date,
     // heureDebut: `${format(new Date(), 'yyyy-MM-dd')}T09:00`,
-    heureDebut: `${format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX")}`,
+    heureDebut: `${formatInTimeZone(new Date(),'Europe/Paris', "yyyy-MM-dd")}`,
     // heureDebut: new Date().toISOString(),
     duree: '60',
     personnesIds: [],
