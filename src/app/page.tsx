@@ -29,7 +29,7 @@ export default function Home() {
       
       {date && lieuId ? (
         <>
-          <div className="mb-6">
+          <div className="mb-6 h-[884px]">
             <h2 className="text-xl font-semibold mb-4">Planning journalier</h2>
             {/* <p>{format(new Date(date), 'eeee dd MMMM yyyy', { locale: fr })}</p> */}
             <DailyCalendar

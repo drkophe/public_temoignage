@@ -1,4 +1,3 @@
-// src/components/DailyCalendar.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -45,6 +44,11 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
       fetchEvents();
     }
   }, [date, lieuId]);
+
+  useEffect(() => {
+    console.log("Données reçues pour events:", events);
+  }, [events]);
+  
 
   const handleDeleteEvent = async (eventId: number) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
@@ -95,6 +99,7 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
     return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
   }
 
+  
 
 
 
@@ -131,6 +136,9 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
               <div>
                 <div className='flex items-center space-x-2'>
                   <p className="text-[8px] font-semibold text-[#799FCC]">
+                    {/* {format(parseISO(event.heureDebut), 'HH:mm', { locale: fr })} -  */}
+                    {/* {format(parseISO(event.heureFin), 'HH:mm', { locale: fr })} */}
+                    {/* { console.log(typeof event.heureDebut) } */}
                     {format(new Date(event.heureDebut), 'HH:mm', { locale: fr })} - 
                     {format(new Date(event.heureFin), 'HH:mm', { locale: fr })}
                   </p>

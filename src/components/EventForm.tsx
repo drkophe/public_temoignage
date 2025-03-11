@@ -22,7 +22,9 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
   // Formulaire
   const [formData, setFormData] = useState<EventFormData>({
     date: date,
-    heureDebut: `${format(new Date(), 'yyyy-MM-dd')}T09:00`,
+    // heureDebut: `${format(new Date(), 'yyyy-MM-dd')}T09:00`,
+    heureDebut: `${format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXX")}`,
+    // heureDebut: new Date().toISOString(),
     duree: '60',
     personnesIds: [],
     lieuId: lieuId,
@@ -148,6 +150,8 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
   if (loading) {
     return <div className="flex justify-center p-4">Chargement...</div>;
   }
+
+  
 
   // Générer les options d'heures (de 6h à 20h, par tranches de 30 min)
   const heureOptions = [];
