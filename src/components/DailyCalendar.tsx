@@ -136,13 +136,8 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
               <div>
                 <div className='flex items-center space-x-2'>
                   <p className="text-[8px] font-semibold text-[#799FCC]">
-                    {/* {format(parseISO(event.heureDebut), 'HH:mm', { locale: fr })} -  */}
-                    {/* {format(parseISO(event.heureFin), 'HH:mm', { locale: fr })} */}
-                    {/* { console.log(typeof event.heureDebut) } */}
                     {formatInTimeZone(new Date(event.heureDebut), 'Europe/Paris', 'HH:mm')} - 
                     {formatInTimeZone(new Date(event.heureFin), 'Europe/Paris', 'HH:mm')}
-                    {/* {format(new Date(event.heureDebut), 'HH:mm', { locale: fr })} - 
-                    {format(new Date(event.heureFin), 'HH:mm', { locale: fr })} */}
                   </p>
                   <p className="text-[8px] text-gray-500">{event.lieu.nom}</p>
                 </div>

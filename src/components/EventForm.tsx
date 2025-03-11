@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Lieu, Personne, EventFormData } from '@/types';
 import { format, getDay, parseISO } from 'date-fns';
-import { formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 
 interface EventFormProps {
   date: string;
@@ -20,11 +20,15 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
   const [success, setSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
+  // const localDateString = "2025-03-11T09:00:00"; // Heure exprimée en "Europe/Paris" par exemple
+  const utcDate = fromZonedTime(new Date(`${date}T09:00`), 'Europe/Paris');
+  console.log(utcDate.toISOString()); // Affiche l'heure UTC correspondante
+  const initialHeureDebut = utcDate.toISOString();
+
   // Formulaire
   const [formData, setFormData] = useState<EventFormData>({
     date: date,
-    // heureDebut: `${formatInTimeZone(new Date(),'Europe/Paris', "yyyy-MM-dd")}`,
-    heureDebut: formatInTimeZone(new Date(`${date}T09:00`), 'Europe/Paris', "yyyy-MM-dd'T'HH:mmxxx"),
+    heureDebut: initialHeureDebut,
     duree: '60',
     personnesIds: [],
     lieuId: lieuId,
@@ -89,9 +93,6 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
     const selectedOptions = Array.from(e.target.selectedOptions, option => Number(option.value));
     setFormData(prev => ({
       ...prev,
-      // personnesIds: selectedOptions.slice(0, 2), // Maximum 2 personnes
-      // Si le lieu à l'id 1 ou 2, alors 4 personnes, sinon 2 personne
-      // personnesIds: selectedOptions.slice(0, lieuId === 1 || lieuId === 2 ? 4 : 2), // MELUN
       personnesIds: selectedOptions.slice(0, lieuId === 5 ? 4 : 2),
     }));
   };
@@ -121,7 +122,8 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
       setFormData(prev => ({
         ...prev,
         // heureDebut: `${date}T09:00`,
-        heureDebut: formatInTimeZone(new Date(`${date}T09:00`), 'Europe/Paris', "yyyy-MM-dd'T'HH:mmxxx"),
+        heureDebut: fromZonedTime(new Date(`${date}T09:00`), 'Europe/Paris').toISOString(),
+        // heureDebut: formatInTimeZone(new Date(`${date}T09:00`), 'Europe/Paris', "yyyy-MM-dd'T'HH:mmxxx"),
         duree: '60',
         personnesIds: [],
       }));
@@ -248,8 +250,6 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
           <div>
             <label htmlFor="personnes" className="block text-sm font-medium text-gray-700 mb-1">
               {formData.lieuId === 5 ? 'Personnes (max 4)' : 'Personnes (max 2)'}
-              {/* {formData.lieuId === 1 || formData.lieuId === 2 ? 'Personnes (max 4)' : 'Personnes (max 2)'} */}
-              {/* Personnes (max 2) */}
             </label>
             <select
               id="personnes"
@@ -272,7 +272,6 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
               {formData.personnesIds.length === 0 ? 
                 'Aucune personne sélectionnée' 
                 : 
-                // formData.lieuId === 1 || formData.lieuId === 2 ? 
                 formData.lieuId === 5 ? 
                   `Sélectionné: ${formData.personnesIds.length}/4` 
                   : 
