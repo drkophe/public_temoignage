@@ -74,10 +74,51 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
   };
 
   // Fonction pour calculer la position et la hauteur de l'événement
+  // const getEventStyle = (event: Event) => {
+  //   const startHour = new Date(event.heureDebut).getHours();
+  //   const startMinutes = new Date(event.heureDebut).getMinutes();
+  //   const duration = differenceInMinutes(new Date(event.heureFin), new Date(event.heureDebut));
+    
+  //   // Calculer la position top (1 heure = 60px, 1 minute = 1px)
+  //   const topPosition = (startHour - 6) * 60 + startMinutes;
+    
+  //   // Calculer la hauteur (1 minute = 1px)
+  //   const height = duration;
+    
+  //   return {
+  //     top: `${topPosition}px`,
+  //     height: `${height}px`,
+  //   };
+  // };
+
+  // if (loading) {
+  //   return <div className="flex justify-center p-4">Chargement...</div>;
+  // }
+
+  // if (error) {
+  //   return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
+  // }
+
   const getEventStyle = (event: Event) => {
-    const startHour = new Date(event.heureDebut).getHours();
-    const startMinutes = new Date(event.heureDebut).getMinutes();
-    const duration = differenceInMinutes(new Date(event.heureFin), new Date(event.heureDebut));
+    // Création de dates avec la gestion explicite du fuseau horaire
+    const startDate = new Date(event.heureDebut);
+    const endDate = new Date(event.heureFin);
+    
+    console.log('Debug - Heures brutes:', { 
+      heureDebut: event.heureDebut,
+      heureFin: event.heureFin 
+    });
+    
+    console.log('Debug - Dates parsées:', { 
+      startDate,
+      endDate,
+      startHour: startDate.getHours(),
+      startMinutes: startDate.getMinutes()
+    });
+    
+    const startHour = startDate.getHours();
+    const startMinutes = startDate.getMinutes();
+    const duration = differenceInMinutes(endDate, startDate);
     
     // Calculer la position top (1 heure = 60px, 1 minute = 1px)
     const topPosition = (startHour - 6) * 60 + startMinutes;
@@ -85,20 +126,16 @@ export default function DailyCalendar({ date, lieuId, onEventDeleted }: DailyCal
     // Calculer la hauteur (1 minute = 1px)
     const height = duration;
     
+    console.log('Debug - Calcul position:', {
+      topPosition,
+      height
+    });
+    
     return {
       top: `${topPosition}px`,
       height: `${height}px`,
     };
   };
-
-  if (loading) {
-    return <div className="flex justify-center p-4">Chargement...</div>;
-  }
-
-  if (error) {
-    return <div className="bg-red-100 text-red-700 p-4 rounded">{error}</div>;
-  }
-
   
 
 
