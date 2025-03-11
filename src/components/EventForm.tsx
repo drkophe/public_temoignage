@@ -23,9 +23,8 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
   // Formulaire
   const [formData, setFormData] = useState<EventFormData>({
     date: date,
-    // heureDebut: `${format(new Date(), 'yyyy-MM-dd')}T09:00`,
-    heureDebut: `${formatInTimeZone(new Date(),'Europe/Paris', "yyyy-MM-dd")}`,
-    // heureDebut: new Date().toISOString(),
+    // heureDebut: `${formatInTimeZone(new Date(),'Europe/Paris', "yyyy-MM-dd")}`,
+    heureDebut: formatInTimeZone(new Date(`${date}T09:00`), 'Europe/Paris', "yyyy-MM-dd'T'HH:mmxxx"),
     duree: '60',
     personnesIds: [],
     lieuId: lieuId,
@@ -121,7 +120,8 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
       // Réinitialiser le formulaire
       setFormData(prev => ({
         ...prev,
-        heureDebut: `${date}T09:00`,
+        // heureDebut: `${date}T09:00`,
+        heureDebut: formatInTimeZone(new Date(`${date}T09:00`), 'Europe/Paris', "yyyy-MM-dd'T'HH:mmxxx"),
         duree: '60',
         personnesIds: [],
       }));
