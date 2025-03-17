@@ -21,7 +21,7 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   // const localDateString = "2025-03-11T09:00:00"; // Heure exprimée en "Europe/Paris" par exemple
-  const utcDate = fromZonedTime(new Date(`${date}T09:00`), 'Etc/GMT-2');
+  const utcDate = fromZonedTime(new Date(`${date}T09:00`), 'Europe/Paris');
   console.log(utcDate.toISOString()); // Affiche l'heure UTC correspondante
   const initialHeureDebut = utcDate.toISOString();
 
@@ -122,7 +122,7 @@ export default function EventForm({ date, lieuId, onEventAdded }: EventFormProps
       setFormData(prev => ({
         ...prev,
         // heureDebut: `${date}T09:00`,
-        heureDebut: fromZonedTime(new Date(`${date}T09:00`), 'Etc/GMT-2').toISOString(),
+        heureDebut: fromZonedTime(new Date(`${date}T09:00`), 'Europe/Paris').toISOString(),
         // heureDebut: formatInTimeZone(new Date(`${date}T09:00`), 'Europe/Paris', "yyyy-MM-dd'T'HH:mmxxx"),
         duree: '60',
         personnesIds: [],
